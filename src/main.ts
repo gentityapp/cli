@@ -6,6 +6,7 @@
 import { runLogin } from "./commands/login";
 import { runLogout } from "./commands/logout";
 import { runAgents } from "./commands/agents";
+import { runCompletion } from "./commands/completion";
 import { runComputeList } from "./commands/compute/list";
 import { runComputeCreate } from "./commands/compute/create";
 import { runComputeAction } from "./commands/compute/action";
@@ -39,6 +40,14 @@ async function main(argv: string[]): Promise<number> {
     case "agents": {
       const flags = parseFlags(rest, ["json"]);
       return runAgents({ json: flags.json === "true" || flags.json === "" });
+    }
+    case "completion": {
+      // First positional arg is the shell. We accept it both as a bare
+      // word ("bash") and as a -- flag ("--shell bash") so Homebrew's
+      // `generate_completions_from_executable` works either way.
+      const flags = parseFlags(rest, ["shell"]);
+      const shell = flags.shell || rest.find((a) => !a.startsWith("-"));
+      return runCompletion(shell);
     }
     case "compute":
       return await runCompute(rest);

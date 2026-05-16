@@ -72,6 +72,30 @@ bun run build
    gentity compute delete cl-x7k2m9
    ```
 
+## Shell completions
+
+`gentity completion <shell>` prints a completion script. Hook it up for your shell:
+
+```bash
+# Bash — per-session
+source <(gentity completion bash)
+# Bash — permanent (Linux)
+gentity completion bash | sudo tee /etc/bash_completion.d/gentity > /dev/null
+
+# Zsh — per-session
+source <(gentity completion zsh)
+# Zsh — permanent (drop in any directory on $fpath)
+gentity completion zsh > "${fpath[1]}/_gentity"
+
+# Fish — per-session
+gentity completion fish | source
+# Fish — permanent
+gentity completion fish > ~/.config/fish/completions/gentity.fish
+```
+
+Homebrew users get all three installed automatically — `brew install gentityapp/tap/gentity`
+runs `generate_completions_from_executable` and drops the files into the right paths.
+
 ## Commands
 
 | Command | What |

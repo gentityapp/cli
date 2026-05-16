@@ -1,6 +1,6 @@
 import { c } from "../ui/colors";
 
-const VERSION = "0.0.2";
+const VERSION = "0.0.3";
 
 export function printHelp(topic?: string): number {
   if (topic === "compute") {
@@ -31,6 +31,7 @@ ${c.bold("COMMANDS")}
   ${c.cyan("compute open")}       Open the instance's workspace in your browser
   ${c.cyan("compute logs")}       Tail (or --follow) the instance logs
   ${c.cyan("compute ssh")}        Open an interactive shell in the container
+  ${c.cyan("completion")}         Print a shell-completion script (bash/zsh/fish)
 
 ${c.bold("EXAMPLES")}
   ${$} gentity login --token gn_live_...
@@ -40,6 +41,7 @@ ${c.bold("EXAMPLES")}
   ${$} gentity compute open cl-x7k2m9
   ${$} gentity compute logs cl-x7k2m9 --follow
   ${$} gentity compute ssh cl-x7k2m9
+  ${$} source <(gentity completion bash)   # or zsh, or fish | source
 
 ${c.bold("ENVIRONMENT")}
   ${c.dim("GENTITY_TOKEN")}        Use this token instead of the saved one
