@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: darwin-arm64
+            label: macOS (Apple Silicon)
+          - target: darwin-x64
+            label: macOS (Intel)
+          - target: linux-x64
+            label: Linux (x86_64)
+          - target: linux-arm64
+            label: Linux (ARM64)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Build
+        run: bun run build:${{ matrix.target }}
+      - name: Smoke test (linux only)
+        if: matrix.target == 'linux-x64'
+        run: ./dist/gentity-${{ matrix.target }} --version
+      - name: Checksum
+        run: |
+          cd dist
+          sha256sum gentity-${{ matrix.target }} > gentity-${{ matrix.target }}.sha256
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gentity-${{ matrix.target }}
+          path: |
+            dist/gentity-${{ matrix.target }}
+            dist/gentity-${{ matrix.target }}.sha256
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create / update release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --generate-notes
+          gh release upload "$TAG" dist/gentity-* --clobber
