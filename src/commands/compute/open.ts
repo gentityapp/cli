@@ -1,12 +1,14 @@
 import { apiRequest } from "../../api/client";
 import { c } from "../../ui/colors";
 import { loadConfig } from "../../config";
+import { resolveInstanceId } from "../../api/resolve";
 import type { Instance } from "../../api/types";
 
 // `gentity compute open <id>` — opens the workspace iframe URL for the
 // instance in the user's default browser. On servers / non-TTY, just
 // prints the URL (so it's still useful in tmux / SSH sessions).
-export async function runComputeOpen(id: string): Promise<number> {
+export async function runComputeOpen(idOrSubdomain: string): Promise<number> {
+  const id = await resolveInstanceId(idOrSubdomain);
   const { instance } = await apiRequest<{ instance: Instance }>(`/api/instances/${id}`);
   const cfg = await loadConfig();
   const host = hostnameFromApi(cfg.apiUrl);

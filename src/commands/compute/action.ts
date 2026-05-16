@@ -1,14 +1,16 @@
 import { apiRequest } from "../../api/client";
 import { c } from "../../ui/colors";
 import { Spinner } from "../../ui/spinner";
+import { resolveInstanceId } from "../../api/resolve";
 
 // `gentity compute stop <id>` / `gentity compute start <id>` — issue start
 // or stop. Blocks until the control plane returns (which already waits for
 // Fly to confirm the state transition).
 export async function runComputeAction(
-  id: string,
+  idOrSubdomain: string,
   action: "start" | "stop",
 ): Promise<number> {
+  const id = await resolveInstanceId(idOrSubdomain);
   const verb = action === "start" ? "Starting" : "Stopping";
   const spinner = new Spinner(`${verb} ${id}…`);
   spinner.start();

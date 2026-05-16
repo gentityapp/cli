@@ -1,13 +1,15 @@
 import { apiRequest } from "../../api/client";
 import { c } from "../../ui/colors";
 import { Spinner } from "../../ui/spinner";
+import { resolveInstanceId } from "../../api/resolve";
 
 // `gentity compute delete <id>` — destroy the Fly app + volume.
 // Asks for confirmation unless --yes is passed (CI-friendly).
 export async function runComputeDelete(
-  id: string,
+  idOrSubdomain: string,
   opts: { yes?: boolean },
 ): Promise<number> {
+  const id = await resolveInstanceId(idOrSubdomain);
   if (!opts.yes) {
     process.stdout.write(
       `${c.yellow("⚠")}  This destroys the machine and its persistent volume for ${c.bold(id)}.\n` +
