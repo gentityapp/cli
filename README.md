@@ -2,6 +2,8 @@
 
 > Spin up isolated AI agent compute from your terminal.
 
+![gentity CLI demo](assets/demo.gif)
+
 `gentity` is the official CLI for [Gentity](https://gentity.ai) — provision
 [Hermes](https://hermes-agent.nousresearch.com), [OpenClaw](https://www.openclaw.com),
 [Claude Code](https://code.claude.com), [Aider](https://aider.chat), and
