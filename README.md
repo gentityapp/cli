@@ -26,11 +26,15 @@ curl -fsSL https://gentity.ai/install.sh | bash
 
 This downloads the right binary for your OS/arch into `/usr/local/bin/gentity`.
 
-### Homebrew (macOS / Linux) — coming soon
+### Homebrew (macOS / Linux)
 
 ```bash
-brew install gentityapp/tap/gentity   # tap pending publish
+brew install gentityapp/tap/gentity
 ```
+
+The tap lives at [gentityapp/homebrew-tap](https://github.com/gentityapp/homebrew-tap)
+and tracks the latest GitHub Release. Run `brew upgrade gentity` to get newer
+versions as they ship.
 
 ### Build from source
 
