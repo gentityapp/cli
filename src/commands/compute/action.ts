@@ -3,15 +3,18 @@ import { c } from "../../ui/colors";
 import { Spinner } from "../../ui/spinner";
 import { resolveInstanceId } from "../../api/resolve";
 
-// `gentity compute stop <id>` / `gentity compute start <id>` — issue start
-// or stop. Blocks until the control plane returns (which already waits for
-// Fly to confirm the state transition).
+// `gentity compute {start|stop|restart} <id>` — drive the Fly machine
+// through a lifecycle transition. Blocks until the control plane returns
+// (it already waits for Fly to confirm the state).
 export async function runComputeAction(
   idOrSubdomain: string,
-  action: "start" | "stop",
+  action: "start" | "stop" | "restart",
 ): Promise<number> {
   const id = await resolveInstanceId(idOrSubdomain);
-  const verb = action === "start" ? "Starting" : "Stopping";
+  const verb =
+    action === "start" ? "Starting" : action === "stop" ? "Stopping" : "Restarting";
+  const past =
+    action === "start" ? "started" : action === "stop" ? "stopped" : "restarted";
   const spinner = new Spinner(`${verb} ${id}…`);
   spinner.start();
   try {
@@ -19,7 +22,7 @@ export async function runComputeAction(
       method: "POST",
       body: { action },
     });
-    spinner.succeed(`${action === "start" ? "started" : "stopped"} ${c.bold(id)}`);
+    spinner.succeed(`${past} ${c.bold(id)}`);
     return 0;
   } catch (err) {
     spinner.fail(`${verb.toLowerCase()} failed`);

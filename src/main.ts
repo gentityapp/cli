@@ -5,11 +5,14 @@
 
 import { runLogin } from "./commands/login";
 import { runLogout } from "./commands/logout";
+import { runAgents } from "./commands/agents";
 import { runComputeList } from "./commands/compute/list";
 import { runComputeCreate } from "./commands/compute/create";
 import { runComputeAction } from "./commands/compute/action";
 import { runComputeDelete } from "./commands/compute/delete";
 import { runComputeOpen } from "./commands/compute/open";
+import { runComputeLogs } from "./commands/compute/logs";
+import { runComputeSsh } from "./commands/compute/ssh";
 import { printHelp, printVersion } from "./commands/help";
 import { ApiError } from "./api/client";
 import { c } from "./ui/colors";
@@ -33,6 +36,10 @@ async function main(argv: string[]): Promise<number> {
     }
     case "logout":
       return runLogout();
+    case "agents": {
+      const flags = parseFlags(rest, ["json"]);
+      return runAgents({ json: flags.json === "true" || flags.json === "" });
+    }
     case "compute":
       return await runCompute(rest);
     default:
@@ -78,7 +85,8 @@ async function runCompute(argv: string[]): Promise<number> {
       return runComputeList({ json: flags.json === "true" || flags.json === "" });
     }
     case "start":
-    case "stop": {
+    case "stop":
+    case "restart": {
       const id = rest.find((a) => !a.startsWith("-"));
       if (!id) {
         console.error(c.red("error:"), `compute ${sub} requires an instance id`);
@@ -103,6 +111,28 @@ async function runCompute(argv: string[]): Promise<number> {
         return 1;
       }
       return runComputeOpen(id);
+    }
+    case "logs": {
+      const flags = parseFlags(rest, ["lines", "follow", "json"]);
+      const id = rest.find((a) => !a.startsWith("-"));
+      if (!id) {
+        console.error(c.red("error:"), "compute logs requires an instance id");
+        return 1;
+      }
+      const lines = flags.lines ? parseInt(flags.lines, 10) : undefined;
+      return runComputeLogs(id, {
+        lines: Number.isFinite(lines) ? lines : undefined,
+        follow: flags.follow === "true" || flags.follow === "",
+        json: flags.json === "true" || flags.json === "",
+      });
+    }
+    case "ssh": {
+      const id = rest.find((a) => !a.startsWith("-"));
+      if (!id) {
+        console.error(c.red("error:"), "compute ssh requires an instance id");
+        return 1;
+      }
+      return runComputeSsh(id);
     }
     default:
       console.error(c.red("error:"), `unknown compute subcommand "${sub}"`);

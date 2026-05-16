@@ -1,6 +1,6 @@
 {
   "name": "@gentityapp/cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The gentity CLI — spin up isolated AI agent compute from your terminal.",
   "license": "MIT",
   "homepage": "https://gentity.ai",

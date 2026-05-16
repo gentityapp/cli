@@ -1,6 +1,6 @@
 import { c } from "../ui/colors";
 
-const VERSION = "0.0.1";
+const VERSION = "0.0.2";
 
 export function printHelp(topic?: string): number {
   if (topic === "compute") {
@@ -21,18 +21,25 @@ ${c.bold("USAGE")}
 ${c.bold("COMMANDS")}
   ${c.cyan("login")}              Save your API token
   ${c.cyan("logout")}             Clear the saved token
+  ${c.cyan("agents")}             List available agents (catalog)
   ${c.cyan("compute create")}     Provision a new agent instance
   ${c.cyan("compute list")}       List your instances
   ${c.cyan("compute start")}      Resume a stopped instance
   ${c.cyan("compute stop")}       Stop a running instance (volume kept)
+  ${c.cyan("compute restart")}    Stop + start in one command
   ${c.cyan("compute delete")}     Destroy machine + volume
   ${c.cyan("compute open")}       Open the instance's workspace in your browser
+  ${c.cyan("compute logs")}       Tail (or --follow) the instance logs
+  ${c.cyan("compute ssh")}        Open an interactive shell in the container
 
 ${c.bold("EXAMPLES")}
   ${$} gentity login --token gn_live_...
+  ${$} gentity agents
   ${$} gentity compute create --agent claude-code --model claude-sonnet-4-5
   ${$} gentity compute list
   ${$} gentity compute open cl-x7k2m9
+  ${$} gentity compute logs cl-x7k2m9 --follow
+  ${$} gentity compute ssh cl-x7k2m9
 
 ${c.bold("ENVIRONMENT")}
   ${c.dim("GENTITY_TOKEN")}        Use this token instead of the saved one
@@ -53,13 +60,18 @@ ${c.bold("SUBCOMMANDS")}
   ${c.cyan("list")}      [--json]
   ${c.cyan("start")}     <id>
   ${c.cyan("stop")}      <id>
+  ${c.cyan("restart")}   <id>
   ${c.cyan("delete")}    <id> [--yes]
   ${c.cyan("open")}      <id>
+  ${c.cyan("logs")}      <id> [--lines N] [--follow] [--json]
+  ${c.cyan("ssh")}       <id>
 
 ${c.bold("EXAMPLES")}
   ${$} gentity compute create --agent claude-code --model claude-sonnet-4-5
   ${$} gentity compute create --agent openclaw   --model openrouter/auto --region nrt
-  ${$} gentity compute list --json | jq '.[] | select(.status == "running")'`);
+  ${$} gentity compute list --json | jq '.[] | select(.status == "running")'
+  ${$} gentity compute logs cl-x7k2m9 --follow
+  ${$} gentity compute ssh cl-x7k2m9`);
 }
 
 export function printVersion(): number {
